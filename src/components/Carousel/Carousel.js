@@ -3,16 +3,20 @@ import styles from './Carousel.module.css';
 
 function Carousel(props) {
 	const [isDown, setIsDown] = useState(false);
+	const [animation, setAnimation] = useState(false);
 	const [clickX, setClickX] = useState(0);
 	const [left, setLeft] = useState(-props.width);
 	const [startLeft, setStartLeft] = useState(0);
 	const content = [props.content[props.content.length - 1], ...props.content, props.content[0]];
 
 	function onStart(event){
+		setAnimation(false);
+		console.log(animation, 'start');
 		let clientX = event.clientX || event.changedTouches[0].clientX;
 		setIsDown(value => !value);
 		setClickX(clientX);
-		setStartLeft(left)
+		setStartLeft(left);
+
 	}
 
 	function onMove(event) {
@@ -23,6 +27,9 @@ function Carousel(props) {
 	}
 
 	function onEnd(event) {
+		if (!isDown) return;
+		setAnimation(true);
+		console.log(animation, 'end');
 		let clientX = event.clientX || event.changedTouches[0].clientX;
 		setIsDown(value => !value);
 		if ((clickX - clientX >= props.width / 3) && (Math.abs(clickX - clientX) >= props.width / 3)) {
@@ -49,7 +56,7 @@ function Carousel(props) {
 				style={{width: props.width, height: props.height}}
 				className={styles.corouselContainer}>
 				{content.map((el, index) => 
-					<div key={index} className={styles.elementContainer} style={{left: `${left}px`}}>
+					<div key={index} className={`${styles.elementContainer} ${animation?styles.transition:null}`} style={{left: `${left}px`}}>
 						{el}
 					</div>
 				)}
