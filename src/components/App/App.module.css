@@ -1,6 +1,10 @@
 .element {
-	width: 300px;
-	height: 300px;
+	width: 2000px;
+	height: 2000px;
 	margin: 0;
 	padding: 0;
+}
+
+.imageElement {
+	object-fit: cover;
 }
