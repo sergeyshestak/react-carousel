@@ -7,9 +7,10 @@
 }
 
 .container {
+	margin: auto;
 	display: flex;
 	justify-content: center;
-	width: 98vw;
+	width: 90vw;
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
 	-webkit-user-select: none;
@@ -27,4 +28,30 @@
 
 .transition {
 	transition-duration: .5s;
+}
+
+.btnGroup {
+	padding: 2vw;
+	display: flex;
+	justify-content: center;
+}
+
+.btn {
+	margin: 1.5vw .5vw;
+	width: 1vw;
+	height: 1vw;
+	border-radius: 50%;
+	background-color: gray;
+}
+
+.currentBtn {
+	background-color: green;
+}
+
+.btnGoLeft, .btnGoRight {
+	width: 3vw;
+	height: 3vw;
+	border-radius: 5%;
+	background-color: gray;
+	margin: .5vw;
 }
