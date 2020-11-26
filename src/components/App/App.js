@@ -14,7 +14,7 @@ const content = [
 
 function App() {
 	return (
-		<Carousel content={content} width={600} height={600} duration={300}/>
+		<Carousel content={content} width={600} height={600}/>
 	);
 }
 
