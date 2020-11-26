@@ -93,7 +93,9 @@ function Carousel(props) {
 			onMouseMove={e => onMove(e)}
 			onTouchMove={e => onMove(e)}
 			onTouchEnd={e => onEnd(e)}
-			onMouseUp={e => onEnd(e)}>
+			onMouseUp={e => onEnd(e)}
+			onMouseLeave={e => onEnd(e)}
+			onTouchCancel={e => onEnd(e)}>
 			<div 
 				style={{width: props.width, height: props.height}}
 				className={styles.corouselContainer}>
