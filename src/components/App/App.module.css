@@ -1,10 +1,14 @@
 .element {
-	width: 2000px;
-	height: 2000px;
+	width: 600px;
+	height: 600px;
 	margin: 0;
 	padding: 0;
 }
 
 .imageElement {
-	object-fit: cover;
+  object-fit: cover;
+  height: 100%;
+  margin: auto;
+  display: block;
+  background-color: green;
 }

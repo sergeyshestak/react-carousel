@@ -3,14 +3,12 @@
 	overflow: hidden;
 	display: flex;
 	margin: auto;
-	background-color: gray;
 }
 
 .container {
 	margin: auto;
 	display: flex;
 	justify-content: center;
-	width: 90vw;
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
 	-webkit-user-select: none;
@@ -19,23 +17,25 @@
 }
 
 .elementContainer {
-	position: relative;
-	min-width: 100%;
-	height: 100%;
-	display: flex;
-	justify-content: center;
+  position: absolute;
+  z-index: 1;
 	overflow: hidden;
 	pointer-events: none;
 }
 
 .transition {
-	transition-duration: .5s;
+	transition-duration: 300ms;
 }
 
 .btnGroup {
 	padding: 2vw;
 	display: flex;
-	justify-content: center;
+  justify-content: center;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .btn {
@@ -43,7 +43,10 @@
 	width: 1vw;
 	height: 1vw;
 	border-radius: 50%;
-	background-color: gray;
+  background-color: gray;
+  border: 0px;
+  outline: none;
+  cursor: pointer;
 }
 
 .currentBtn {
@@ -55,5 +58,8 @@
 	height: 3vw;
 	border-radius: 5%;
 	background-color: gray;
-	margin: .5vw;
+  margin: .5vw;
+  border: 0px;
+  outline: none;
+  cursor: pointer;
 }

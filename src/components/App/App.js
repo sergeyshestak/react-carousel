@@ -2,29 +2,23 @@ import React from 'react';
 import Carousel from '../Carousel/Carousel';
 import styles from './App.module.css';
 
-const content = [
-  <div>
-    <div className={styles.element} style={{ backgroundColor: 'black' }} />
-    <div className={styles.element} style={{ backgroundColor: 'black' }} />
-  </div>,
-  <div className={styles.element} style={{ backgroundColor: 'red' }} />,
-  <div className={styles.element} style={{ backgroundColor: 'green' }} />,
-  <div className={styles.element} style={{ backgroundColor: 'pink' }} />,
-  <div className={styles.element} style={{ backgroundColor: 'blue' }} />,
-];
-
 const imageContent = [
-  <img className={styles.imageElement} src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapercave.com%2Fwp%2FylvyN1V.jpg&f=1&nofb=1" alt="" />,
-  <img className={styles.imageElement} src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.ytimg.com%2Fvi%2F7WCbIjqjHM4%2Fmaxresdefault.jpg&f=1&nofb=1" alt="" />,
-  <img className={styles.imageElement} src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fbeautifulcoolwallpapers.files.wordpress.com%2F2011%2F08%2Fnaturewallpaper.jpg&f=1&nofb=1" alt="" />,
-  <img className={styles.imageElement} src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcroatia.hr%2Fsites%2Fdefault%2Ffiles%2Fstyles%2Fimage_full_width%2Fpublic%2F2017-08%2F02_01_slide_nature.jpg%3Fitok%3DItAHmLlp&f=1&nofb=1" alt="" />,
+  <img className={styles.imageElement} src="https://eco-business.imgix.net/ebmedia/fileuploads/Feature_RightsofNature_inline2.jpg?fit=crop&h=801&ixlib=django-1.2.0&q=85&w=1200" alt="" />,
+  <img className={styles.imageElement} src="https://oecdenvironmentfocusblog.files.wordpress.com/2020/06/wed-blog-shutterstock_1703194387_low_nwm.jpg?w=640" alt="" />,
+  <img className={styles.imageElement} src="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/nature-quotes-1557340276.jpg?crop=0.666xw:1.00xh;0.168xw,0&resize=640:*" alt="" />,
+  <img className={styles.imageElement} src="https://i.pinimg.com/originals/a4/47/30/a44730c584b5c70d38fa61c87db3eca3.jpg" alt="" />,
+  <img className={styles.imageElement} src="https://miro.medium.com/max/10836/1*5lpiSFo6j5dhrr6Z6RFd8Q.jpeg" alt="" />,
 ];
 
 function App() {
   return (
     <>
-      <Carousel content={content} width={600} height={600} />
-      <Carousel content={imageContent} width={600} height={600} />
+      <Carousel
+        content={imageContent}
+        settings={{
+          width: 600, height: 600, infinite: true, slides: 3,
+        }}
+      />
     </>
   );
 }
