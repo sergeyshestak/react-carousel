@@ -1,4 +1,9 @@
 # react-carousel
+
+  You can see an example of app on Github Pages: 
+  
+  https://sergeyshestak.github.io/react-carousel/dist/index.html
+
 # Install
 
   Clone the git repository:
