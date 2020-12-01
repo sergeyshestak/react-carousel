@@ -1,148 +1,205 @@
 import React, { useState } from 'react';
 import styles from './Carousel.module.css';
 
+const LEFT_DIRECTION = 'left';
+const RIGHT_DIRECTION = 'right';
+const ANIMATION_DURATION = 300;
+
 function Carousel(props) {
+  const { settings, content: contentProp } = props;
+
   const {
     width = 600, height = 600, infinite = true, slides = 1,
-  } = props.settings;
+  } = settings;
+  const content = (!infinite || slides === 1)
+    ? [...contentProp] : [...contentProp, ...contentProp, ...contentProp];
+
   const [isDown, setIsDown] = useState(false);
   const [animation, setAnimation] = useState(false);
   const [animationIsActive, setAnimationIsActive] = useState(false);
   const [clickX, setClickX] = useState(0);
   const [left, setLeft] = useState(0);
   const [startLeft, setStartLeft] = useState(0);
-  const content = (!infinite || slides === 1)
-    ? [...props.content] : [...props.content, ...props.content, ...props.content];
   const [positionMultiplier, setPositionMultiplier] = useState(
     (content.length !== slides)
       ? [...content.map((el, index) => index - Math.floor(content.length / 3))]
       : [...content.map((el, index) => index)],
   );
 
-  function animationDelay(...args) {
-    setLeft(args[0]);
+  function getPositionMultiplierIndex() {
+    return positionMultiplier.findIndex((el) => el === 0);
+  }
+
+  function animationDelay(position, index, quantity, isSwipeLeft) {
+    setLeft(position);
+
     setTimeout(() => {
       setAnimationIsActive(false);
       setAnimation(false);
+      setLeft(0);
+
       if (infinite) {
-        setLeft(0);
-        const arr = [...positionMultiplier];
-        const arr2 = arr.splice(args[1], args[2]);
-        setPositionMultiplier(args[3] ? [...arr, ...arr2] : [...arr2, ...arr]);
+        const positionMultiplierCopy = [...positionMultiplier];
+        const elementsToMove = positionMultiplierCopy.splice(index, quantity);
+
+        setPositionMultiplier(
+          isSwipeLeft
+            ? [...positionMultiplierCopy, ...elementsToMove]
+            : [...elementsToMove, ...positionMultiplierCopy],
+        );
       } else {
-        setLeft(0);
-        args[3]
-          ? setPositionMultiplier((value) => [...value.map((el) => el + args[2])])
-          : setPositionMultiplier((value) => [...value.map((el) => el - args[2])]);
+        setPositionMultiplier(
+          [...positionMultiplier.map((el) => (isSwipeLeft ? el + quantity : el - quantity))],
+        );
       }
-    }, 300);
+    }, ANIMATION_DURATION);
   }
 
-  function swipe(str, position, index, quantity, boolean) {
+  function swipe(str, position, index, quantity, isSwipeLeft) {
     setAnimationIsActive(true);
     setAnimation(true);
 
-    if (str === 'left') {
-      if (infinite) {
-        animationDelay(position, index, quantity, boolean);
-      } else if (Math.abs(positionMultiplier[0] * (width / slides)) > width) {
-        animationDelay(position, index, quantity, boolean);
-      } else {
-        const i = positionMultiplier.findIndex((el) => el === 0);
-        animationDelay((width / slides) * i, 0, i, boolean);
-      }
+    let rangeToMove;
+    let animationDelayParams;
+    const positionMultiplierIndex = getPositionMultiplierIndex();
+
+    if (str === LEFT_DIRECTION) {
+      rangeToMove = 0;
+      animationDelayParams = [
+        (width / slides) * positionMultiplierIndex,
+        0,
+        positionMultiplierIndex,
+        isSwipeLeft,
+      ];
+    } else {
+      rangeToMove = content.length - slides;
+      animationDelayParams = [
+        -(width / slides) * (content.length - positionMultiplierIndex - slides),
+        positionMultiplierIndex + 1,
+        content.length - positionMultiplierIndex - slides,
+        isSwipeLeft,
+      ];
     }
-    if (str === 'right') {
-      if (infinite) {
-        animationDelay(position, index, quantity, boolean);
-      } else if (Math.abs(positionMultiplier[content.length - slides] * (width / slides)) > width) {
-        animationDelay(position, index, quantity, boolean);
-      } else {
-        const i = positionMultiplier.findIndex((el) => el === 0);
-        animationDelay(
-          -(width / slides) * (content.length - i - slides),
-          i + 1,
-          content.length - i - slides,
-          boolean,
-        );
-      }
+
+    if (infinite
+      || (Math.abs(positionMultiplier[rangeToMove] * (width / slides)) > width)
+    ) {
+      animationDelay(position, index, quantity, isSwipeLeft);
+    } else {
+      animationDelay(...animationDelayParams);
     }
   }
 
   function goTo(index) {
-    const i = positionMultiplier.findIndex((el) => el === 0);
     if (!positionMultiplier[index]) return;
-    if (index < i) {
-      swipe('left', -positionMultiplier[index] * width, 0, i - index, true);
+
+    const positionMultiplierIndex = getPositionMultiplierIndex();
+    let swipeParams;
+
+    if (index < positionMultiplierIndex) {
+      swipeParams = [
+        LEFT_DIRECTION,
+        -positionMultiplier[index] * width,
+        0,
+        positionMultiplierIndex - index,
+        true,
+      ];
     } else {
-      swipe('right', -positionMultiplier[index] * width, content.length + i - index, index - i, false);
+      swipeParams = [
+        RIGHT_DIRECTION,
+        -positionMultiplier[index] * width,
+        content.length + positionMultiplierIndex - index,
+        index - positionMultiplierIndex,
+        false,
+      ];
     }
+
+    swipe(...swipeParams);
   }
 
   function onStart(event) {
-    setAnimation(false);
     const clientX = event.clientX || event.changedTouches[0].clientX;
+
     setIsDown((value) => !value);
+    setAnimation(false);
     setClickX(clientX);
     setStartLeft(left);
   }
 
   function onMove(event) {
-    if (isDown) {
-      const clientX = event.clientX || event.changedTouches[0].clientX;
-      if (clickX > clientX) {
-        if (infinite) {
-          setLeft(clientX - clickX + startLeft);
-        } else if (
-          Math.abs(positionMultiplier[content.length - slides] * (width / slides)) > width
-        ) {
-          setLeft(clientX - clickX + startLeft);
-        } else {
-          const i = positionMultiplier.findIndex((el) => el === 0);
-          if (clickX - clientX < (content.length - i - slides) * (width / slides)) {
-            setLeft(clientX - clickX);
-          } else {
-            setLeft((content.length - i - slides) * (-width / slides));
-          }
-        }
-      }
-      if (clickX < clientX) {
-        if (infinite) {
-          setLeft(clientX - clickX + startLeft);
-        } else if (Math.abs(positionMultiplier[0] * (width / slides)) > width) {
-          setLeft(clientX - clickX + startLeft);
-        } else {
-          const i = positionMultiplier.findIndex((el) => el === 0);
-          if (clientX - clickX < i * (width / slides)) {
-            setLeft(clientX - clickX);
-          } else {
-            setLeft(i * (width / slides));
-          }
-        }
-      }
+    if (!isDown) return;
+
+    const clientX = event.clientX || event.changedTouches[0].clientX;
+    const positionMultiplierIndex = getPositionMultiplierIndex();
+    let position;
+    let rangeToMove;
+    let restElementsWidth;
+
+    if (clickX > clientX) {
+      rangeToMove = content.length - slides;
+      position = (content.length - positionMultiplierIndex - slides) * (-width / slides);
+      restElementsWidth = (content.length - positionMultiplierIndex - slides) * (width / slides);
+    } else {
+      rangeToMove = 0;
+      position = positionMultiplierIndex * (width / slides);
+      restElementsWidth = positionMultiplierIndex * (width / slides);
+    }
+
+    if (infinite
+      || Math.abs(positionMultiplier[rangeToMove] * (width / slides)) > width
+    ) {
+      setLeft(clientX - clickX + startLeft);
+    } else if (Math.abs(clickX - clientX) < restElementsWidth) {
+      setLeft(clientX - clickX);
+    } else {
+      setLeft(position);
     }
   }
 
   function onEnd(event) {
     if (!isDown) return;
+
+    const clientX = event.clientX || event.changedTouches[0].clientX;
+    const isNeededToSwipe = (Math.abs(clickX - clientX) >= width / 3);
+
     setAnimationIsActive(true);
+    setIsDown((value) => !value);
+    setAnimation(true);
     setTimeout(() => {
       setAnimationIsActive(false);
-    }, 300);
-    const clientX = event.clientX || event.changedTouches[0].clientX;
-    setIsDown((value) => !value);
-    if ((clickX - clientX >= width / 3) && (Math.abs(clickX - clientX) >= width / 3)) {
-      infinite || (slides === 1)
-        ? swipe('right', -width, positionMultiplier.length - slides, slides, false)
-        : swipe('right', -width, slides, slides, false);
-    } else if ((clickX - clientX <= width / 3) && (Math.abs(clickX - clientX) >= width / 3)) {
-      infinite || (slides === 1)
-        ? swipe('left', width, 0, slides, true)
-        : swipe('left', width, 0, slides, true);
+    }, ANIMATION_DURATION);
+
+    if ((clickX - clientX >= width / 3) && isNeededToSwipe) {
+      swipe(
+        RIGHT_DIRECTION,
+        -width,
+        infinite || (slides === 1) ? positionMultiplier.length - slides : slides,
+        slides,
+        false,
+      );
+    } else if ((clickX - clientX <= width / 3) && isNeededToSwipe) {
+      swipe(LEFT_DIRECTION, width, 0, slides, true);
     } else {
       setLeft(startLeft);
     }
-    setAnimation(true);
+  }
+
+  function handleSideButtonsClick(str, position, index, quantity, isSwipeLeft) {
+    if (animationIsActive) return;
+
+    swipe(str, position, index, quantity, isSwipeLeft);
+  }
+
+  function createButton(className, onClick) {
+    return (
+      <button
+        type="button"
+        className={className}
+        onClick={() => onClick()}
+      >
+        {}
+      </button>
+    );
   }
 
   return (
@@ -177,15 +234,43 @@ function Carousel(props) {
         </div>
       </div>
       <div className={styles.btnGroup}>
-        <button className={styles.btnGoLeft} onClick={() => (animationIsActive ? null : swipe('left', width, 0, slides, true))} />
-        {slides === 1 ? content.map((el, index) => (
-          <button
-            key={index}
-            className={`${styles.btn} ${(positionMultiplier[index] === 0) ? styles.currentBtn : ''}`}
-            onClick={() => goTo(index)}
-          />
-        )) : null}
-        <button className={styles.btnGoRight} onClick={() => (animationIsActive ? null : swipe('right', -width, positionMultiplier.length - slides, slides, false))} />
+        {
+          createButton(
+            styles.btnGoLeft,
+            () => handleSideButtonsClick(
+              LEFT_DIRECTION,
+              width,
+              0,
+              slides,
+              true,
+            ),
+          )
+        }
+        <ul className={styles.btnGoToGroup}>
+          {slides === 1 ? content.map((el, index) => (
+            <li key={index} className={styles.btnContainer}>
+              <button
+                type="button"
+                className={`${styles.btn} ${(positionMultiplier[index] === 0) ? styles.currentBtn : ''}`}
+                onClick={() => goTo(index)}
+              >
+                {}
+              </button>
+            </li>
+          )) : null}
+        </ul>
+        {
+          createButton(
+            styles.btnGoRight,
+            () => handleSideButtonsClick(
+              RIGHT_DIRECTION,
+              -width,
+              positionMultiplier.length - slides,
+              slides,
+              false,
+            ),
+          )
+        }
       </div>
     </>
   );

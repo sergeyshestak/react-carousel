@@ -16,13 +16,19 @@ function App() {
       <Carousel
         content={imageContent}
         settings={{
-          width: 600, height: 600, infinite: true, slides: 3,
+          width: 600,
+          height: 600,
+          infinite: true,
+          slides: 3,
         }}
       />
       <Carousel
         content={imageContent}
         settings={{
-          width: 600, height: 600, infinite: false, slides: 1,
+          width: 600,
+          height: 600,
+          infinite: false,
+          slides: 1,
         }}
       />
     </>

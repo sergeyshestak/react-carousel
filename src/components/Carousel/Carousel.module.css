@@ -63,3 +63,13 @@
   outline: none;
   cursor: pointer;
 }
+
+.btnGoToGroup {
+  padding: 0;
+  margin: 0;
+}
+
+.btnContainer {
+  list-style-type: none;
+  display: inline;
+}
